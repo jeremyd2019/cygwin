@@ -1741,6 +1741,7 @@ class fhandler_disk_file: public fhandler_base
   void seekdir (DIR *, long);
   void rewinddir (DIR *);
   int closedir (DIR *);
+  int fpathconf (int);
 
   ssize_t pread (void *, size_t, off_t, void *aio = NULL);
   ssize_t pwrite (void *, size_t, off_t, void *aio = NULL);

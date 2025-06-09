@@ -7,6 +7,7 @@ Cygwin license.  Please consult the file "CYGWIN_LICENSE" for
 details. */
 
 #include "winsup.h"
+#include <unistd.h>
 #include <winioctl.h>
 #include <lm.h>
 #include <stdlib.h>
@@ -2861,6 +2862,19 @@ out:
   if (fh != get_handle ())
     NtClose (fh);
   return ret;
+}
+
+int
+fhandler_disk_file::fpathconf (int v)
+{
+  switch (v)
+    {
+    case _PC_CASE_INSENSITIVE:
+      return !!pc.objcaseinsensitive () &&
+	     !(fs_ioc_getflags () & FS_CASESENS_FL);
+    default:
+      return fhandler_base::fpathconf (v);
+    }
 }
 
 int
