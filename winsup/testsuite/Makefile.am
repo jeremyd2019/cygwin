@@ -45,6 +45,7 @@ check_PROGRAMS = \
 	winsup.api/nullgetcwd \
 	winsup.api/resethand \
 	winsup.api/semtest \
+	winsup.api/setpgid_errors \
 	winsup.api/shmtest \
 	winsup.api/sigchld \
 	winsup.api/signal-into-win32-api \
@@ -340,6 +341,7 @@ TESTS = $(check_PROGRAMS) \
 
 # expected fail tests
 XFAIL_TESTS = \
+	winsup.api/setpgid_errors \
 	winsup.api/ltp/setgroups01 \
 	winsup.api/ltp/setuid02 \
 	winsup.api/ltp/ulimit01 \
