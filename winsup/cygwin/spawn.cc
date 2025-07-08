@@ -1554,8 +1554,6 @@ do_posix_spawn (pid_t *pid, const char *path,
 		  goto closes;
 		if (args.stdfds[fae->fae_fildes] != -1)
 		  close (args.stdfds[fae->fae_fildes]);
-		/* can we just mask out O_CLOEXEC from fae_oflag, or must we
-		   use F_SETFD later? */
 		args.stdfds[fae->fae_fildes] = openat (args.cwdfd,
 						       fae->fae_path,
 						       fae->fae_oflag,
@@ -1566,7 +1564,6 @@ do_posix_spawn (pid_t *pid, const char *path,
 		    ret = get_errno ();
 		    goto closes;
 		  }
-		fcntl (args.stdfds[fae->fae_fildes], F_SETFD, 0);
 		if (oldflags[fae->fae_fildes] == -1)
 		  oldflags[fae->fae_fildes] = fcntl (fae->fae_fildes, F_GETFD,
 						     0);
