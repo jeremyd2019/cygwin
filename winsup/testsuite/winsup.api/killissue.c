@@ -7,6 +7,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef _WIN32
+
 int main (int argc, char **argv)
 {
   sigset_t set, oldset;
@@ -15,6 +19,10 @@ int main (int argc, char **argv)
 
   if (argc == 3 && !strcmp (argv[1], "--child"))
     {
+      char buf[MAX_PATH];
+      HMODULE mod = GetModuleHandleA ("cygwin1.dll");
+      GetModuleFileNameA (mod, buf, MAX_PATH);
+      printf ("%s\n", buf);
       if (kill (atoi (argv[2]), SIGUSR1) == -1)
 	{
 	  perror ("kill after exec");
@@ -32,7 +40,7 @@ int main (int argc, char **argv)
   errno = 0;
   sigprocmask (SIG_BLOCK, &set, &oldset);
 
-#if 0
+#if 1
   switch ((childpid = fork ()))
   {
   case -1:

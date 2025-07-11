@@ -187,7 +187,6 @@ jobs:
         export PATH=/usr/bin:$(cygpath ${SYSTEMROOT})/system32 &&
         export MAKEFLAGS=-j$(nproc) &&
         cd build &&
-        (export PATH=${{ matrix.target }}/winsup/testsuite/testinst/bin:${PATH} && cmd /c $(cygpath -wa ${{ matrix.target }}/winsup/cygserver/cygserver) &) &&
         (cd ${{ matrix.target }}/winsup; make check AM_COLOR_TESTS=always)
       shell: bash --noprofile --norc -eo pipefail '{0}'
 
