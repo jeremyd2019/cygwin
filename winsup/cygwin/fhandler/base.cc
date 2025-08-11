@@ -29,6 +29,7 @@ details. */
 #include "shared_info.h"
 #include <asm/socket.h>
 #include "cygwait.h"
+#include "tls_pbuf.h"
 
 static const int CHUNK_SIZE = 1024; /* Used for crlf conversions */
 
@@ -132,6 +133,27 @@ char *fhandler_base::get_proc_fd_name (char *buf)
     {
       stpcpy (stpcpy (buf, get_name ()), " (deleted)");
       return buf;
+    }
+  if (get_device () == FH_FS && get_name ())
+    {
+      tmp_pathbuf tp;
+      PWCHAR fpbuf = tp.w_get ();
+      DWORD ret;
+
+      ret = GetFinalPathNameByHandleW (get_handle (), fpbuf, NT_MAX_PATH, 0);
+      if (ret)
+	{
+	  PWCHAR ubuf = tp.w_get ();
+	  UNICODE_STRING uc = {2, 2, ubuf + sys_mbstowcs (ubuf, NT_MAX_PATH, get_name ())},
+			 fc = {2, 2, fpbuf + ret + 1};
+	  while (--uc.Buffer >= ubuf && --fc.Buffer >= fpbuf &&
+	      (RtlCompareUnicodeString (&uc, &fc, TRUE) == 0 ||
+	       (iswdirsep (*uc.Buffer) && iswdirsep (*fc.Buffer))))
+	    if (!iswdirsep (*uc.Buffer))
+	      *uc.Buffer = *fc.Buffer;
+	  sys_wcstombs (buf, NT_MAX_PATH, ubuf);
+	  return buf;
+	}
     }
   if (get_name ())
     return strcpy (buf, get_name ());
